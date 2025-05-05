@@ -53,10 +53,22 @@ def github_tools(client: GithubClient) -> List[Tool]:
         contributors = client.list_repository_contributors(full_name)
         return json.dumps(contributors)
 
+    @tool()
+    def list_repository_issues(full_name: str, state: str = "open") -> str:
+        """
+        Gets a list of issues for a given repository
+
+        full_name: The full name of the repository, for example: "owner/repo"
+        state: The state of the issues to fetch (open, closed, or all)
+        """
+        issues = client.list_repository_issues(full_name, state)
+        return json.dumps([asdict(issue) for issue in issues])
+
     return [
         list_repositories_for_organization,
         list_repositories_for_user,
         search_repositories,
         list_repository_languages,
         list_repository_contributors,
+        list_repository_issues,
     ]

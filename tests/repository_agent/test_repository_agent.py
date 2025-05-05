@@ -156,3 +156,48 @@ class TestRepositoryAgent(unittest.TestCase):
             )],
             result.tool_calls
         )
+
+    @slow
+    @responses.activate
+    def test_list_repository_issues(self):
+        responses.add(
+            responses.GET,
+            "https://api.github.com/repos/pickles_org/pickles_repo/issues",
+            json=[
+                {
+                    "number": 1,
+                    "title": "Fix login bug",
+                    "state": "open",
+                    "html_url": "https://github.com/pickles_org/pickles_repo/issues/1",
+                    "created_at": "2024-01-01T00:00:00Z",
+                    "updated_at": "2024-01-02T00:00:00Z",
+                    "body": "The login page is not working properly",
+                    "user": {"login": "Alice"}
+                },
+                {
+                    "number": 2,
+                    "title": "Add new feature",
+                    "state": "open",
+                    "html_url": "https://github.com/pickles_org/pickles_repo/issues/2",
+                    "created_at": "2024-01-03T00:00:00Z",
+                    "updated_at": "2024-01-04T00:00:00Z",
+                    "body": "We need to add a new feature",
+                    "user": {"login": "Bob"}
+                }
+            ],
+            status=200,
+        )
+
+        result = self.agent.answer("What are the open issues in the pickles_repo from pickles_org?")
+
+        self.assertIn("Fix login bug", result.response)
+        self.assertIn("Add new feature", result.response)
+        self.assertIn("Alice", result.response)
+        self.assertIn("Bob", result.response)
+        self.assertEqual(
+            [ToolCall(
+                name='list_repository_issues',
+                arguments={'full_name': 'pickles_org/pickles_repo', 'state': 'open'}
+            )],
+            result.tool_calls
+        )

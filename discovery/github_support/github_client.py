@@ -23,6 +23,18 @@ class GithubUser:
     name: str
 
 
+@dataclass
+class Issue:
+    number: int
+    title: str
+    state: str
+    html_url: str
+    created_at: str
+    updated_at: str
+    body: str
+    user: str
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,6 +111,36 @@ class GithubClient(object):
             return []
 
         return [user["login"] for user in response.json()]
+
+    def list_repository_issues(self, full_name: str, state: str = "open") -> List[Issue]:
+        """
+        Gets a list of issues for a given repository
+        
+        full_name: The full name of the repository, for example: "owner/repo"
+        state: The state of the issues to fetch (open, closed, or all)
+        """
+        response = requests.get(
+            f"https://api.github.com/repos/{full_name}/issues",
+            headers=self.request_headers,
+            params={"state": state}
+        )
+        if response.status_code != 200:
+            logger.error(f"Failed to get issues for {full_name}: {response.text}")
+            return []
+
+        return [
+            Issue(
+                number=issue["number"],
+                title=issue["title"],
+                state=issue["state"],
+                html_url=issue["html_url"],
+                created_at=issue["created_at"],
+                updated_at=issue["updated_at"],
+                body=issue["body"] or "",
+                user=issue["user"]["login"]
+            )
+            for issue in response.json()
+        ]
 
     @staticmethod
     def __repo_from_json(repo):
