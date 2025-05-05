@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/application.css') }}">
+
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" sizes="48x48">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" sizes="any" type="image/svg+xml"/>
+
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/loader.svg') }}">
+
+    <title>Repository Discovery Agent</title>
+</head>
+<body>
+<header>
+    <a href="/">
+        <ul class="un-styled">
+            <li>
+                <svg class="logo">
+                    <use xlink:href="{{ url_for('static', filename='images/icons.svg', _anchor='logo') }}"></use>
+                </svg>
+            </li>
+            <li class="heading">
+                <h1>Repository Discovery Agent</h1>
+            </li>
+        </ul>
+    </a>
+    {% if g.username %}
+        <div class="actions">
+            <span>{{ g.username }}</span>
+            <a href="/logout"><svg><use xlink:href="{{ url_for('static', filename='images/icons.svg', _anchor='logout') }}"></use></svg></a>
+        </div>
+    {% endif %}
+</header>
+<footer>
+    <article>
+        <ul class="un-styled">
+            <li><a href="https://github.com/coloradocollective/ai-agent-assignment">View on GitHub</a></li>
+        </ul>
+        <span>CSCI 5828</span>
+    </article>
+    <aside>
+        <img src="{{ url_for('static', filename='images/cu-logo-white.svg') }}" alt="CU Logo">
+    </aside>
+</footer>
+
+<main>
+    {% block body %}{% endblock %}
+</main>
+</body>
+</html>
